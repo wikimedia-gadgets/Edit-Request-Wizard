@@ -294,7 +294,7 @@ $(document).ready(function () {
       const quoteValue = quoteinput.getValue();
       const linkValue = linkinput.getValue();
 
-      const response = await fetch("http://localhost:3000/post", {
+      const response = await fetch("http://edit-wizard.toolforge.org/post", {
         method: "POST",
         body: JSON.stringify({ linkValue, quoteValue }),
         headers: { 'Content-Type': 'application/json' },
