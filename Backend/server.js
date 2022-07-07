@@ -3,17 +3,12 @@ const { JSDOM } = require('jsdom');
 var bodyParser = require('body-parser');
 var cors = require('cors')
 
-const port = 3000
+const port = parseInt(process.env.PORT, 10);
 
 const app = express()
 app.use(bodyParser.json())
 app.use(cors()) 
 
-
-// app.get('/get', (req, res) => {
-//     res.status(200);
-//     res.send('Hello World!')
-// })
 
 app.post('/post', async (req, res) => {
   const { linkValue, quoteValue } = req.body;
