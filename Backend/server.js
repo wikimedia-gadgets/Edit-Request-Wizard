@@ -1,17 +1,15 @@
-const express = require('express');
+const express = require('express')
 const { JSDOM } = require('jsdom');
-const fetch = require('node-fetch');
 var bodyParser = require('body-parser');
-var cors = require('cors');
+var cors = require('cors')
 
-// const port = parseInt(process.env.PORT, 10);
-const port = 3000;
+const port = parseInt(process.env.PORT, 10);
 
-const app = express();
-app.use(bodyParser.json());
-app.use(cors());
+const app = express()
+app.use(bodyParser.json())
+app.use(cors()) 
 
-// API to verify the quote if it comes from source
+
 app.post('/api/v1/verifyQuote', async (req, res) => {
   const { linkValue, quoteValue } = req.body;
   try {
@@ -25,7 +23,6 @@ app.post('/api/v1/verifyQuote', async (req, res) => {
   } catch (error) {
     console.log(error)
     res.send('failure')
-    res.sendStatus(404);
   } 
 })
 

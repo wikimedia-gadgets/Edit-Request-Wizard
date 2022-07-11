@@ -1,12 +1,12 @@
 $(document).ready(function () {
 
   //CSS loader
-  mw.loader.addStyleTag( '.heading { font-size: 20px; text-align: center; margin: 10px; width:100% }');
-  mw.loader.addStyleTag( '.help { font: 13px cursive; font-style: italic }');
-  mw.loader.addStyleTag( '.status { font: 13px sans-serif; margin: 5px; width: 70%; font-style: italic }');
-  mw.loader.addStyleTag( '.button { display: inline-block; text-align: center; margin-top: 10px; margin-bottom: 10px }' );
-  mw.loader.addStyleTag( '.container { width: 350px; height:200px }');
-  mw.loader.addStyleTag( '.status:empty { display: none }');
+  mw.util.addCSS( '.heading { font-size: 20px; text-align: center; margin: 10px; width:100% }');
+  mw.util.addCSS( '.help { font: 13px cursive; font-style: italic }');
+  mw.util.addCSS( '.status { font: 13px sans-serif; margin: 5px; width: 70%; font-style: italic }');
+  mw.util.addCSS( '.button { display: inline-block; text-align: center; margin-top: 10px; margin-bottom: 10px }' );
+  mw.util.addCSS( '.container { width: 350px; height:200px }');
+  mw.util.addCSS( '.status:empty { display: none }');
 
   // It is important to make sure that OOUI is loaded before we can make use of it.
   mw.loader.using("oojs-ui", "mediawiki.api").done(function () {
@@ -247,8 +247,7 @@ $(document).ready(function () {
       //API call to make a request from Citoid
       fetch(`https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/${query}`, {
         headers: {
-          'Content-Type': 'application/json',
-          'Api-User-Agent': 'w:en:User:Ankit18gupta/MyScript.js'
+          'Content-Type': 'application/json'
         }
       })
         .then(response => response.json())
@@ -292,8 +291,7 @@ $(document).ready(function () {
       const linkValue = linkinput.getValue();
 
       //Making an API call to the backend to verify if the quote comes from the source
-      const host = window.ERW_DEV_MODE ? 'https://edit-wizard.toolforge.org' : 'http://localhost:3000';
-      const response = await fetch(`${host}/api/v1/verifyQuote`, {
+      const response = await fetch("http://localhost:3000/api/v1/verifyQuote", {
         method: "POST",
         body: JSON.stringify({ linkValue, quoteValue }),
         headers: { 'Content-Type': 'application/json' },
@@ -396,11 +394,11 @@ $(document).ready(function () {
     // A popup button widget is instantiated
     const popUp = new OO.ui.PopupButtonWidget({
       label: "EDIT WIZARD",
+      popup: false,
       align: "force-right",
       popup: {
         $content: stack.$element,
         padded: true,
-        popup: false,
         width: 400,
         height: 270,
         position: "after",
@@ -414,4 +412,9 @@ $(document).ready(function () {
     $("#p-navigation").append(popUp.$element);
   });
 });
+
+
+
+
+
 
