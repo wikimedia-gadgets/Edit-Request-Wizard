@@ -21,3 +21,4 @@ jobs:
           host: login.toolforge.org
           username: ankitgupta
           privateKey: ${{ secrets.TOOLFORGE_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
