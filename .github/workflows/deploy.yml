@@ -1,0 +1,23 @@
+name: Deploy to Toolforge
+
+on:
+  - push
+  - workflow_dispatch
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: garygrossgarten/github-action-ssh@2b10f41b5a33808f6d24eafd253296766308b7c4
+        with:
+          command: >-
+            become edit-wizard bash -c '
+              cd Edit-Request-Wizard/Backend;
+              git pull;
+              npm install;
+              webservice --backend=kubernetes node12 restart;
+            '
+          host: login.toolforge.org
+          username: ankitgupta
+          privateKey: ${{ secrets.TOOLFORGE_PRIVATE_KEY }}
