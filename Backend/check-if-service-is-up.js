@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { exec } = require('node:child_process')
+const { exec } = require('child_process')
 
 fetch('https://edit-wizard.toolforge.org/ping').then(function(response){
     if(!response.ok){
