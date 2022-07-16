@@ -11,6 +11,11 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+//To check if the service is running
+app.get('/ping', function(req, res) {
+  res.send('pong')
+})
+
 // API to verify the quote if it comes from source
 app.post('/api/v1/verifyQuote', async (req, res) => {
   const { linkValue, quoteValue } = req.body;
