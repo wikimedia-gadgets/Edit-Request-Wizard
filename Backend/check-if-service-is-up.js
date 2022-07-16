@@ -3,6 +3,6 @@ const { exec } = require('child_process')
 
 fetch('https://edit-wizard.toolforge.org/ping').then(function(response){
     if(!response.ok){
-        exec('echo -e "Subject: Test message subject\n\nTest message" | /usr/sbin/exim -odf -i tools.edit-wizard@toolforge.org', (err, output) => {})
+        exec('echo "Edit-Wizard server not running" | /usr/bin/mail -s "Edit Request Wizard service is not running. You are requested to look into it as soon as possible" tools.edit-wizard@toolforge.org', (err, output) => {})
     }
 })
