@@ -2,11 +2,14 @@ const express = require('express');
 const { JSDOM } = require('jsdom');
 const fetch = require('node-fetch');
 const got = require('got');
+const QuickLRU = require('quick-lru');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
-const port = parseInt(process.env.PORT, 10);
-// const port = 3000;
+// const port = parseInt(process.env.PORT, 10);
+const port = 3000;
+
+const lru = new QuickLRU({maxSize: 1000});
 
 const app = express();
 app.use(bodyParser.json());
@@ -25,7 +28,7 @@ app.post('/api/v1/verifySource', async (req, res) => {
   var comment = "";
   var kind = "";
   try {
-    got( "https://en.wikipedia.org/w/index.php?title=Wikipedia:TESTING-DONT-USE-unreliable.json&action=raw", { cache: lru }).json()
+    got( "https://en.wikipedia.org/w/index.php?title=Wikipedia:TESTING-DONT-USE-unreliable.json&action=raw", { cache: lru, headers: {'Cache-Control': 'max-age=60, stale-while-revalidate=86400' }}).json()
     .then((json) => {
       (json).forEach(element => {
         const Origins = element.list;
