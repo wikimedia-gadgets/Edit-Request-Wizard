@@ -23,6 +23,8 @@ app.post('/api/v1/verifySource', async (req, res) => {
   const linkValue = req.body;
   const url = new URL(linkValue.linkValue);
   var flag = false;
+  var comment = "";
+  var kind = "";
   try {
     got( "https://en.wikipedia.org/w/index.php?title=Wikipedia:TESTING-DONT-USE-unreliable.json&action=raw").json()
     .then((json) => {
@@ -32,15 +34,15 @@ app.post('/api/v1/verifySource', async (req, res) => {
           return;
         }
         if (Origins.some(origin => url.origin.includes(origin))) {
-          const comment = element.comment;
-          const kind = element.kind;
+          comment = element.comment;
+          kind = element.kind;
           flag = true;
           res.send({comment, flag, kind});
         }
-        else{
-          res.send({flag});
-        }
       });
+      if(!flag){
+        res.send({comment, flag, kind});
+      }
     }); 
   } 
   catch (error) {
