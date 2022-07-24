@@ -22,7 +22,7 @@ app.get('/ping', function(req, res) {
 app.post('/api/v1/verifySource', async (req, res) => {
   const linkValue = req.body;
   const url = new URL(linkValue.linkValue);
-  const flag = false;
+  var flag = false;
   try {
     got( "https://en.wikipedia.org/w/index.php?title=Wikipedia:TESTING-DONT-USE-unreliable.json&action=raw").json()
     .then((json) => {
