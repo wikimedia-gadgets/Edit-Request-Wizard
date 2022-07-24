@@ -28,7 +28,7 @@ app.post('/api/v1/verifySource', async (req, res) => {
   var comment = "";
   var kind = "";
   try {
-    got( "https://en.wikipedia.org/w/index.php?title=Wikipedia:TESTING-DONT-USE-unreliable.json&action=raw", { cache: lru, headers: {'Cache-Control': 'max-age=60, stale-while-revalidate=86400' }}).json()
+    got( "https://en.wikipedia.org/w/index.php?title=Wikipedia:TESTING-DONT-USE-unreliable.json&action=raw", { cache: lru }).json()
     .then((json) => {
       (json).forEach(element => {
         const Origins = element.list;
@@ -39,7 +39,7 @@ app.post('/api/v1/verifySource', async (req, res) => {
           comment = element.comment;
           kind = element.kind;
           flag = true;
-          res.header("Cache-Control", "max-age=60, stale-while-revalidate=86400")
+          // res.header("Cache-Control", "max-age=60, stale-while-revalidate=86400")
           res.send({ comment, flag, kind })
         }
       });
