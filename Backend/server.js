@@ -28,7 +28,7 @@ app.post('/api/v1/verifySource', async (req, res) => {
   var comment = "";
   var kind = "";
   try {
-    got( "https://en.wikipedia.org/w/index.php?title=Wikipedia:TESTING-DONT-USE-unreliable.json&action=raw", { cache: lru }).json()
+    got( "https://en.wikipedia.org/w/index.php?title=Wikipedia:TESTING-DONT-USE-unreliable.json&action=raw").json()
     .then((json) => {
       (json).forEach(element => {
         const Origins = element.list;
