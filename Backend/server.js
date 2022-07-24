@@ -37,6 +37,9 @@ app.post('/api/v1/verifySource', async (req, res) => {
           flag = true;
           res.send({comment, flag, kind});
         }
+        else{
+          res.send({flag});
+        }
       });
     }); 
   } 
