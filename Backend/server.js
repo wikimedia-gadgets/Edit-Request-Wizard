@@ -2,14 +2,14 @@ const express = require('express');
 const { JSDOM } = require('jsdom');
 const fetch = require('node-fetch');
 const got = require('got');
-const QuickLRU = require('quick-lru');
+// const QuickLRU = require('quick-lru');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
-// const port = parseInt(process.env.PORT, 10);
-const port = 3000;
+const port = parseInt(process.env.PORT, 10);
+// const port = 3000;
 
-const lru = new QuickLRU({maxSize: 1000});
+// const lru = new QuickLRU({maxSize: 1000});
 
 const app = express();
 app.use(bodyParser.json());
