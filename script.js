@@ -1,11 +1,13 @@
+// <nowiki>
 $(document).ready(function () {
 
   //CSS loader
-  mw.loader.addStyleTag( '.heading { font-size: 20px; text-align: center; margin: 10px; width:100% }');
+  mw.loader.addStyleTag( '.heading { font-size: 18px; text-align: center; margin: 5px; width:100% }');
   mw.loader.addStyleTag( '.help { font: 13px cursive; font-style: italic }');
-  mw.loader.addStyleTag( '.status { font: 13px sans-serif; margin: 5px; width: 70%; font-style: italic }');
+  mw.loader.addStyleTag( '.status { font: 13px sans-serif; margin: 5px; width: 70%; font-style: italic; width: 100% }');
+  mw.loader.addStyleTag( '.messageStatus { font: 12px sans-serif; margin-left: 1rem; margin: 5px; width: 70%; font-style: italic; width: 100% }');
   mw.loader.addStyleTag( '.button { display: inline-block; text-align: center; margin-top: 10px; margin-bottom: 10px }' );
-  mw.loader.addStyleTag( '.container { width: 350px; height:200px }');
+  mw.loader.addStyleTag( '.container { width: 415px; height:200px }');
   mw.loader.addStyleTag( '.status:empty { display: none }');
 
   // It is important to make sure that OOUI is loaded before we can make use of it.
@@ -16,7 +18,8 @@ $(document).ready(function () {
         label: "EDIT REQUEST WIZARD",
       }),
       linkheading = new OO.ui.LabelWidget({
-        label: "URL to the source",
+        label: "Give a source for your fact",
+        classes: ["label"],
       }),
       linkhelp = new OO.ui.PopupButtonWidget({
         icon: "info",
@@ -33,6 +36,7 @@ $(document).ready(function () {
           ),
           padded: true,
           align: "center",
+          width: "300px",
           autoFlip: true,
         },
       }),
@@ -45,6 +49,11 @@ $(document).ready(function () {
         classes: ["status"],
         showClose: true,
         icon:"none",
+      }),
+      linkverifybutton = new OO.ui.ButtonWidget({
+        label: "Verify",
+        classes: ["button"],
+        flags: ["primary", "progressive"],
       }),
       linkbutton = new OO.ui.ButtonWidget({
         label: "Next",
@@ -59,6 +68,7 @@ $(document).ready(function () {
           linkhelp,
           linkinput,
           linkstatus,
+          linkverifybutton,
           linkbutton,
         ],
         padded: true,
@@ -69,7 +79,8 @@ $(document).ready(function () {
         label: "EDIT WIZARD",
       }),
       selectfieldsetcontent = new OO.ui.FieldsetLayout({
-        label: "Please select the text from the article and click Next button",
+        label: "Select the sentence in the article that your text should go after and click Next",
+        classes: ["label"],
       }),
       selectstatus = new OO.ui.MessageWidget({
         inline: true,
@@ -105,7 +116,8 @@ $(document).ready(function () {
         label: "EDIT WIZARD",
       }),
       quoteheading = new OO.ui.LabelWidget({
-        label: "Enter the quote below",
+        label: "Quote from your source that supports your fact",
+        classes: ["label"],
       }),
       quotehelp = new OO.ui.PopupButtonWidget({
         icon: "info",
@@ -121,7 +133,7 @@ $(document).ready(function () {
             "<p>Type the quote text from the above-mentioned source you want to edit.\u200e</p>"
           ),
           padded: true,
-          align: "center",
+          align: "backwards",
           autoFlip: true,
         },
       }),
@@ -168,7 +180,8 @@ $(document).ready(function () {
         label: "EDIT WIZARD",
       }),
       requoteheading = new OO.ui.LabelWidget({
-        label: "Enter the rephrase Quote",
+        label: "Rewrite the quote in your own words",
+        classes: ["label"],
       }),
         requotehelp = new OO.ui.PopupButtonWidget({
           icon: "info",
@@ -182,6 +195,7 @@ $(document).ready(function () {
             label: "More information",
             $content: $("<p>Rephrase the quote in your own words.\u200e</p>"),
             padded: true,
+            width: "280px",
             align: "center",
             autoFlip: true,
           },
@@ -229,6 +243,7 @@ $(document).ready(function () {
       });
 
       //all the functional buttons
+      linkverifybutton.on('click', handlelinkVerify);
       linkbutton.on('click', handlelinkNext);
       quotebutton.on('click', handlequoteNext);
       selectbutton.on('click', handleselectNext);
@@ -238,13 +253,57 @@ $(document).ready(function () {
       requotebutton.on('click', handlePublish);
       selectbutton.on('click', getSelectionText);
 
-    
-    let linkurl, website;
+
+      let check = 0;
+      async function handlelinkVerify(){
+        const linkValue = linkinput.getValue();
+
+        linkstatus.setType("none");
+        linkstatus.setIcon("null");
+        linkstatus.setLabel("Loading...");
+
+        if (linkValue === "") {
+          linkstatus.setType("warning");
+          linkstatus.setLabel("The input cannot be left empty");
+        }
+        //Making an API call to the backend to verify if the quote comes from the source
+        const host = window.ERW_DEV_MODE ? 'https://edit-wizard.toolforge.org' : 'http://localhost:3000';
+        const response = await fetch(`https://edit-wizard.toolforge.org/api/v1/verifySource`, {
+          method: "POST",
+          body: JSON.stringify({ linkValue}),
+          headers: { 'Content-Type': 'application/json'},
+        })
+        const { comment, flag, kind } = await response.json()
+        
+        if(flag==2){
+          check = 3;
+          linkstatus.setType("error");
+          linkstatus.setLabel("This is not a valid URL");
+        }
+        if (flag==1) {
+          check = 1;
+          linkstatus.setType("warning");
+          linkstatus.setLabel(comment);
+        }
+        if (kind == "blacklisted" || kind == "unreliable") {
+          check = 2;
+          linkstatus.setType("error");
+          linkstatus.setLabel(comment);
+        }
+        if (flag==0 && check!=3){
+            check = 1;
+            linkstatus.setType("success");
+            linkstatus.setLabel("Source probably OK");
+        }
+      }
+
+    let linkurl, website, selected=0;
     async function handlelinkNext(){
       const linkValue = linkinput.getValue();
       const query= encodeURIComponent(linkValue);
 
       //API call to make a request from Citoid
+      if (linkValue!= "") {
       fetch(`https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/${query}`, {
         headers: {
           'Content-Type': 'application/json',
@@ -254,26 +313,46 @@ $(document).ready(function () {
         .then(response => response.json())
         .then(citationArray => {
           linkurl = citationArray[0].url;
-          website = citationArray[0].websiteTitle;
+          website = citationArray[0].title;
         })
-        .catch((error) => alert('Error:', error));
-
+        .catch((error) => {
+          console.log("Error: ",error);
+        });
+      }
       // If the linkValue is empty, prompt a warning
       if (linkValue === "") {
           linkstatus.setType("warning");
           linkstatus.setLabel("The input cannot be left empty");
       }
-      else{
+      else if(check == 0){
+          linkstatus.setType("warning");
+          linkstatus.setLabel("Please verify the quote first");
+      }
+      else if(check == 2){
+          linkstatus.setType("error");
+          linkstatus.setLabel("This is a unreliable source, we cannot proceed");
+      }
+      else if(check == 3){
+          linkstatus.setType("error");
+          linkstatus.setLabel("This is not a valid URL, we cannot proceed");
+      }
+      else if(check == 1){
           stack.setItem( selectpanel );
+          $("#edit-wizard-link span").html("Done selecting");
           $( 'body' ).css( 'background-color', '#b8b9ba' );
           $( '#mw-head' ).css( 'background-color', '#b8b9ba' );
+          selected = 1;
       }
     }
 
-    let selectValue, selectionSection;
-    function handleselectNext(){
-      selectValue = getSelectionText();
-      selectionSection = getSelectionSection();
+    function doneSelecting(){
+      // if(selected){
+      //   popUp.toggle(false);
+      // }
+
+      if(selected){
+        selectValue = getSelectionText();
+        selectionSection = getSelectionSection();
 
       // If the selectValue is empty, prompt a warning
       if (selectValue === "") {
@@ -282,64 +361,15 @@ $(document).ready(function () {
       }
       else{
           stack.setItem( quotepanel );
+          $("#edit-wizard-link span").html("Edit Wizard");
           $( 'body' ).css( 'background-color', '#f6f6f6' );
           $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
+          selected = 0;
+      }
       }
     }
 
-    async function handlequoteNext(){
-      const quoteValue = quoteinput.getValue();
-      const linkValue = linkinput.getValue();
-
-      //Making an API call to the backend to verify if the quote comes from the source
-      const host = window.ERW_DEV_MODE ? 'https://edit-wizard.toolforge.org' : 'http://localhost:3000';
-      const response = await fetch(`${host}/api/v1/verifyQuote`, {
-        method: "POST",
-        body: JSON.stringify({ linkValue, quoteValue }),
-        headers: { 'Content-Type': 'application/json' },
-      })
-      const { isParagraphTextOnPage } = await response.json()
-
-      if (isParagraphTextOnPage) {
-        quotestatus.setType("success");
-        quotestatus.setLabel("Verified!");
-        stack.setItem( requotepanel );
-      }
-      else if(!isParagraphTextOnPage) {
-        quotestatus.setType("error");
-        quotestatus.setLabel("The quote does not match");
-      }
-      else if (quoteValue === "") {
-        quotestatus.setType("warning");
-        quotestatus.setLabel("The input cannot be left empty");
-      }
-    }
     
-    function handleselectBack(){
-      stack.setItem( linkpanel );
-    }
-    function handlequoteBack(){
-      stack.setItem( selectpanel );
-    }
-    function handlerequoteBack(){
-      stack.setItem( quotepanel );
-    }
-
-    // Function to send request to the edit page
-    function editPage( info ) {
-      var api = new mw.Api();
-      api.postWithToken("csrf", {
-        action: 'edit',
-        title: info.title,
-        appendtext: info.text,
-        summary: info.summary
-      } ).then(function( data ) {
-        alert( 'Edit Request sent to talk page..!' );
-      } ).catch( function(code, data) {
-        console.log( api.getErrorMessage( data ).text());
-      } );
-    }
-
     // Function to get the Selected Text 
     function getSelectionText() {
       var text = "";
@@ -369,12 +399,102 @@ $(document).ready(function () {
       return e.firstChild.textContent;
     }
 
+    let selectValue, selectionSection;
+    function handleselectNext(){
+      selectValue = getSelectionText();
+
+      // If the selectValue is empty, prompt a warning
+      if (selectValue === "") {
+          selectstatus.setType("warning");
+          selectstatus.setLabel("Please select the text before continuing");
+      }
+      else{
+          selectionSection = getSelectionSection();
+          stack.setItem( quotepanel );
+          selected = 0;
+          $("#edit-wizard-link span").html("Edit Wizard");
+          $( 'body' ).css( 'background-color', '#f6f6f6' );
+          $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
+      }
+    }
+
+    async function handlequoteNext(){
+      const quoteValue = quoteinput.getValue();
+      const linkValue = linkinput.getValue();
+
+      quotestatus.setType("none");
+      quotestatus.setIcon("null");
+      quotestatus.setLabel("Loading...");
+      
+
+      //Making an API call to the backend to verify if the quote comes from the source
+      const host = window.ERW_DEV_MODE ? 'https://edit-wizard.toolforge.org' : 'http://localhost:3000';
+      const response = await fetch(`https://edit-wizard.toolforge.org/api/v1/verifyQuote`, {
+        method: "POST",
+        body: JSON.stringify({ linkValue, quoteValue }),
+        headers: { 'Content-Type': 'application/json' },
+      })
+      const { isParagraphTextOnPage } = await response.json()
+
+      if (quoteValue === "") {
+        quotestatus.setType("warning");
+        quotestatus.setLabel("The input cannot be left empty");
+      }
+      else if(!isParagraphTextOnPage) {
+        quotestatus.setType("error");
+        quotestatus.setLabel("The quote does not match");
+      }
+      else if (isParagraphTextOnPage) {
+        quotestatus.setType("success");
+        quotestatus.setLabel("Verified!");
+        stack.setItem( requotepanel );
+      }
+      
+    }
+    
+    function handleselectBack(){
+      stack.setItem( linkpanel );
+      $("#edit-wizard-link span").html("Edit Wizard");
+      $( 'body' ).css( 'background-color', '#f6f6f6' );
+      $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
+    }
+    function handlequoteBack(){
+      stack.setItem( selectpanel );
+      selected = 1;
+      $("#edit-wizard-link span").html("Done selecting");
+      $( 'body' ).css( 'background-color', '#b8b9ba' );
+      $( '#mw-head' ).css( 'background-color', '#b8b9ba' );
+    }
+    function handlerequoteBack(){
+      stack.setItem( quotepanel );
+      selected = 0;
+    }
+
+    // Function to send request to the edit page
+    function editPage( info ) {
+      var api = new mw.Api();
+      api.postWithToken("csrf", {
+        action: 'edit',
+        title: info.title,
+        appendtext: info.text,
+        summary: info.summary
+      } ).then(function( data ) {
+        OO.ui.alert( 'Edit Request sent to talk page..!' );
+      } ).catch( function(code, data) {
+        console.log( api.getErrorMessage( data ).text());
+      } );
+    }
+
 
     function handlePublish(){
         
         const linkValue = linkinput.getValue();
         const quoteValue = quoteinput.getValue();
         const requoteValue = requoteinput.getValue();
+        const firstthree = quoteValue.split(' ').slice(0,3).join(' ');
+        const array = quoteValue.split(' ');
+        const len = array.length - 3;
+        const lastthree = quoteValue.split(' ').slice(len).join(' ');
 
         if (requoteValue === "") {
             requotestatus.$element.show();
@@ -387,31 +507,48 @@ $(document).ready(function () {
             // API calls code goes here
             editPage({
               title: (new mw.Title(mw.config.get("wgPageName"))).getTalkPage().toText(),
-              text: '\n== Edit Request made by {{subst:REVISIONUSER}} ~~~~~ == \n' + '<br><b>Citation:</b> ' + `[${linkValue} ${website}]` + '<br><b>Section to Edit:</b> ' + selectionSection + '<br><b>Spot where to add the fact:</b> ' + selectValue + '<br><b>Quote:</b> ' + quoteValue + '<br><b>Rephrased Quote:</b> ' + requoteValue + '<br> ~~~~',
+              text: '\n== Edit Request made by {{subst:REVISIONUSER}} ~~~~~ == \n' + '<br><b>Citation:</b> ' + `[${linkValue} ${website}]` + '<br><b>Section to Edit:</b> ' + selectionSection + '<br><b>Spot where to add the fact:</b> ' + selectValue + '<br><b>Quote:</b> ' + 'Quote starts here - ' + firstthree + '...             ' + lastthree + '<br><b>Rephrased Quote:</b> ' + requoteValue + '<br> ~~~~',
               summary: 'Edit Request to add a fact'
             }); 
         }
     }
+    
 
-    // A popup button widget is instantiated
-    const popUp = new OO.ui.PopupButtonWidget({
-      label: "EDIT WIZARD",
-      align: "force-right",
-      popup: {
+    var node = mw.util.addPortletLink(
+      'p-views',
+      "#",
+      'Edit Wizard',
+      'edit-wizard-link',
+      'Edit Wizard',
+      "",
+      "#ca-history",
+    );
+
+    // A popup widget is instantiated
+    var popUp = new OO.ui.PopupWidget({
+        align: "forwards",
+        $floatableContainer: $(node),
         $content: stack.$element,
         padded: true,
         popup: false,
-        width: 400,
-        height: 270,
-        position: "after",
+        width: 440,
+        height: 260,
         head: true,
         // autoClose: false,
         hideCloseButton: false,
-      },
     });
+    
+    
+    //If we are done selecting the text it automatically moves to the next panel
+    // $(node).on('click', doneSelecting);
 
-    // Appends the popup button widget to the left section of the wiki page
-    $("#p-navigation").append(popUp.$element);
+    $(node).on('click', function(e){
+      popUp.toggle();
+      e.preventDefault();
+    })
+
+    $(document.body).append(popUp.$element);
   });
 });
 
+// </nowiki>
