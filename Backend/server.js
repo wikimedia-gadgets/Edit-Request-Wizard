@@ -1,60 +1,80 @@
 const express = require('express');
 const { JSDOM } = require('jsdom');
 const fetch = require('node-fetch');
-const got = require('got');
-const QuickLRU = require('quick-lru');
+const morgan = require('morgan');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
 const port = parseInt(process.env.PORT, 10);
 // const port = 3000;
 
-const lru = new QuickLRU({maxSize: 1000});
-
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+app.use(morgan('short'));
 
 //To check if the service is running
 app.get('/ping', function(req, res) {
   res.send('pong')
 })
 
-//API to verify source
+//Caching the JSON
+var data;
+const json_url = "https://en.wikipedia.org/w/index.php?title=Wikipedia:TESTING-DONT-USE-unreliable.json&action=raw";
+function updateData() { data = fetch(json_url).then((response) => response.json()); }
+updateData();
+setInterval(updateData, 1000 * 60 * 60 * 12);
+
+
+// API to verify source
 app.post('/api/v1/verifySource', async (req, res) => {
   const linkValue = req.body;
-  const url = new URL(linkValue.linkValue);
-  var flag = false;
+
+  var flag = 0;
   var comment = "";
   var kind = "";
-  try {
-    got( "https://en.wikipedia.org/w/index.php?title=Wikipedia:TESTING-DONT-USE-unreliable.json&action=raw", { cache: lru }).json()
-    .then((json) => {
-      (json).forEach(element => {
-        const Origins = element.list;
-        if(typeof Origins == "undefined"){
-          return;
-        }
-        if (Origins.some(origin => url.origin.includes(origin))) {
-          comment = element.comment;
-          kind = element.kind;
-          flag = true;
-          res.header("Cache-Control", "max-age=60, stale-while-revalidate=86400");
-          res.send({ comment, flag, kind });
+  try{
+    var url = new URL(linkValue.linkValue);
+    try {
+      data.then(function(json){
+        (json).forEach(element => {
+          const Origins = element.list;
+          var regex = element.regex;
+          var re = new RegExp('\\b(?:' + regex + ')\\b');
+          if(element.list != null){
+            if (Origins.some(origin => url.origin.includes(origin))) {
+              comment = element.comment;
+              kind = element.kind;
+              flag = 1;
+              res.send({ comment, flag, kind });
+            }
+          }
+          if(element.regex!=null){
+            if(re.test(url)){
+              comment = element.comment;
+              kind = element.kind;
+              flag = 1;
+              res.send({ comment, flag, kind });
+            }
+          }
+        });
+        if(flag==0){
+          res.send({comment, flag, kind});
         }
       });
-      if(!flag){
-        res.send({comment, flag, kind});
-      }
-    }); 
-  } 
-  catch (error) {
-    console.log(error)
-    res.send('failure')
-    res.sendStatus(404);
-  } 
+      
+    } 
+    catch (error) {
+      res.send('failure')
+      res.sendStatus(404);
+    }
+    }
+    catch(error){
+      flag=2;
+      res.send({comment, flag, kind});
+    }
+   
 })
-
 
 
 // API to verify the quote if it comes from source
@@ -65,7 +85,8 @@ app.post('/api/v1/verifyQuote', async (req, res) => {
     .then(res => res.text())
     .then((html) => {
       const { document } = (new JSDOM(html)).window;
-      const isParagraphTextOnPage =  document.body.textContent.includes( quoteValue )
+      // const isParagraphTextOnPage = document.body.textContent.replaceAll('\xa0', ' ').includes(quoteValue.replaceAll('\xa0', ' '));
+      const isParagraphTextOnPage = document.body.textContent.includes(quoteValue);
       res.send({isParagraphTextOnPage})
     }); 
   } catch (error) {
