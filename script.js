@@ -383,7 +383,7 @@ $(document).ready(function () {
 
     // Funtion to get the target Section
     function getSelectionSection(){
-      var e = window.getSelection().anchorNode.parentElement.closest('p');
+      var e = window.getSelection().anchorNode.parentElement;
       var found_it = false;
       while (e.tagName.toLowerCase() !== 'body') {
           if (e.tagName.toLowerCase() === 'h2') {
