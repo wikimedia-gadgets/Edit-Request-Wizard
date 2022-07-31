@@ -3,20 +3,16 @@ $(document).ready(function () {
 
   //CSS loader
   mw.loader.addStyleTag( '.heading { font-size: 18px; text-align: center; margin: 5px; width:100% }');
-  mw.loader.addStyleTag( '.help { font: 13px cursive; font-style: italic }');
+  mw.loader.addStyleTag( '.help { font-size: 13px; font-style: italic }');
   mw.loader.addStyleTag( '.status { font: 13px sans-serif; margin: 5px; width: 70%; font-style: italic; width: 100% }');
   mw.loader.addStyleTag( '.messageStatus { font: 12px sans-serif; margin-left: 1rem; margin: 5px; width: 70%; font-style: italic; width: 100% }');
   mw.loader.addStyleTag( '.button { display: inline-block; text-align: center; margin-top: 10px; margin-bottom: 10px }' );
-  mw.loader.addStyleTag( '.container { width: 415px; height:200px }');
+  mw.loader.addStyleTag( '.container { width: 415px; height:150px }');
   mw.loader.addStyleTag( '.status:empty { display: none }');
 
   // It is important to make sure that OOUI is loaded before we can make use of it.
   mw.loader.using("oojs-ui", "mediawiki.api").done(function () {
 
-    var linkfieldset = new OO.ui.FieldsetLayout({
-        classes: ["heading"],
-        label: "EDIT REQUEST WIZARD",
-      }),
       linkheading = new OO.ui.LabelWidget({
         label: "Give a source for your fact",
         classes: ["label"],
@@ -63,7 +59,6 @@ $(document).ready(function () {
 
       linkpanel = new OO.ui.PanelLayout({
         content: [
-          linkfieldset,
           linkheading,
           linkhelp,
           linkinput,
@@ -74,10 +69,6 @@ $(document).ready(function () {
         padded: true,
       }),
 
-      selectfieldset = new OO.ui.FieldsetLayout({
-        classes: ["heading"],
-        label: "EDIT WIZARD",
-      }),
       selectfieldsetcontent = new OO.ui.FieldsetLayout({
         label: "Select the sentence in the article that your text should go after and click Next",
         classes: ["label"],
@@ -101,7 +92,6 @@ $(document).ready(function () {
 
       selectpanel = new OO.ui.PanelLayout({
         content: [
-          selectfieldset,
           selectfieldsetcontent,
           selectstatus,
           selectbackbutton,
@@ -111,10 +101,6 @@ $(document).ready(function () {
       }),
 
 
-      quotefieldset = new OO.ui.FieldsetLayout({
-        classes: ["heading"],
-        label: "EDIT WIZARD",
-      }),
       quoteheading = new OO.ui.LabelWidget({
         label: "Quote from your source that supports your fact",
         classes: ["label"],
@@ -162,7 +148,6 @@ $(document).ready(function () {
 
       quotepanel = new OO.ui.PanelLayout({
         content: [
-          quotefieldset,
           quoteheading,
           quotehelp,
           quoteinput,
@@ -173,12 +158,7 @@ $(document).ready(function () {
         padded: true,
       }),
 
-      
-
-      requotefieldset = new OO.ui.FieldsetLayout({
-        classes: ["heading"],
-        label: "EDIT WIZARD",
-      }),
+     
       requoteheading = new OO.ui.LabelWidget({
         label: "Rewrite the quote in your own words",
         classes: ["label"],
@@ -225,7 +205,6 @@ $(document).ready(function () {
 
         requotepanel = new OO.ui.PanelLayout({
           content: [
-            requotefieldset,
             requoteheading,
             requotehelp,
             requoteinput,
@@ -280,17 +259,17 @@ $(document).ready(function () {
           linkstatus.setType("error");
           linkstatus.setLabel("This is not a valid URL");
         }
-        if (flag==1) {
+        else if (flag==1) {
           check = 1;
           linkstatus.setType("warning");
           linkstatus.setLabel(comment);
+          if (kind == "blacklisted" || kind == "unreliable") {
+            check = 2;
+            linkstatus.setType("error");
+            linkstatus.setLabel(comment);
+          }
         }
-        if (kind == "blacklisted" || kind == "unreliable") {
-          check = 2;
-          linkstatus.setType("error");
-          linkstatus.setLabel(comment);
-        }
-        if (flag==0 && check!=3){
+        else if (flag==0){
             check = 1;
             linkstatus.setType("success");
             linkstatus.setLabel("Source probably OK");
@@ -442,7 +421,7 @@ $(document).ready(function () {
       }
       else if(!isParagraphTextOnPage) {
         quotestatus.setType("error");
-        quotestatus.setLabel("The quote does not match");
+        quotestatus.setLabel("The quote does not match. Please make sure the quote is copied/pasted exactly from the source");
       }
       else if (isParagraphTextOnPage) {
         quotestatus.setType("success");
@@ -532,7 +511,7 @@ $(document).ready(function () {
         padded: true,
         popup: false,
         width: 440,
-        height: 260,
+        height: 220,
         head: true,
         // autoClose: false,
         hideCloseButton: false,

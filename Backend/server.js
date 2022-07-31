@@ -30,6 +30,7 @@ setInterval(updateData, 1000 * 60 * 60 * 12);
 app.post('/api/v1/verifySource', async (req, res) => {
   const linkValue = req.body;
 
+  const BreakError = {};
   var flag = 0;
   var comment = "";
   var kind = "";
@@ -37,6 +38,7 @@ app.post('/api/v1/verifySource', async (req, res) => {
     var url = new URL(linkValue.linkValue);
     try {
       data.then(function(json){
+        try{
         (json).forEach(element => {
           const Origins = element.list;
           var regex = element.regex;
@@ -47,6 +49,7 @@ app.post('/api/v1/verifySource', async (req, res) => {
               kind = element.kind;
               flag = 1;
               res.send({ comment, flag, kind });
+              throw BreakError;
             }
           }
           if(element.regex!=null){
@@ -55,9 +58,13 @@ app.post('/api/v1/verifySource', async (req, res) => {
               kind = element.kind;
               flag = 1;
               res.send({ comment, flag, kind });
+              throw BreakError;
             }
           }
         });
+      } catch (err) {
+        if (err !== BreakError) throw err;
+      }
         if(flag==0){
           res.send({comment, flag, kind});
         }
