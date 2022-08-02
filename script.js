@@ -305,7 +305,7 @@ $(document).ready(function () {
       }
       else if(check == 0){
           linkstatus.setType("warning");
-          linkstatus.setLabel("Please verify the quote first");
+          linkstatus.setLabel("Please verify the source first");
       }
       else if(check == 2){
           linkstatus.setType("error");
