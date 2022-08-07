@@ -193,7 +193,7 @@ $(document).ready(function () {
           icon:"none",
         }),
         requotebutton = new OO.ui.ButtonWidget({
-          label: "Publish",
+          label: "Send Edit Request",
           classes: ["button"],
           flags: ["primary", "progressive"],
         }),
