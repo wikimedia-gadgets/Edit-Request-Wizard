@@ -318,8 +318,8 @@ $(document).ready(function () {
       else if(check == 1){
           stack.setItem( selectpanel );
           $("#edit-wizard-link span").html("Done selecting");
-          $( 'body' ).css( 'background-color', '#b8b9ba' );
-          $( '#mw-head' ).css( 'background-color', '#b8b9ba' );
+          // $( 'body' ).css( 'background-color', '#b8b9ba' );
+          // $( '#mw-head' ).css( 'background-color', '#b8b9ba' );
           selected = 1;
       }
     }
@@ -341,8 +341,8 @@ $(document).ready(function () {
       else{
           stack.setItem( quotepanel );
           $("#edit-wizard-link span").html("Edit Wizard");
-          $( 'body' ).css( 'background-color', '#f6f6f6' );
-          $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
+          // $( 'body' ).css( 'background-color', '#f6f6f6' );
+          // $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
           selected = 0;
       }
       }
@@ -392,8 +392,8 @@ $(document).ready(function () {
           stack.setItem( quotepanel );
           selected = 0;
           $("#edit-wizard-link span").html("Edit Wizard");
-          $( 'body' ).css( 'background-color', '#f6f6f6' );
-          $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
+          // $( 'body' ).css( 'background-color', '#f6f6f6' );
+          // $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
       }
     }
 
@@ -441,8 +441,8 @@ $(document).ready(function () {
       stack.setItem( selectpanel );
       selected = 1;
       $("#edit-wizard-link span").html("Done selecting");
-      $( 'body' ).css( 'background-color', '#b8b9ba' );
-      $( '#mw-head' ).css( 'background-color', '#b8b9ba' );
+      // $( 'body' ).css( 'background-color', '#b8b9ba' );
+      // $( '#mw-head' ).css( 'background-color', '#b8b9ba' );
     }
     function handlerequoteBack(){
       stack.setItem( quotepanel );
