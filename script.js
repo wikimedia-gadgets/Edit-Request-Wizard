@@ -230,7 +230,7 @@ $(document).ready(function () {
       requotebackbutton.on('click', handlerequoteBack);
       selectbackbutton.on('click', handleselectBack);
       requotebutton.on('click', handlePublish);
-      selectbutton.on('click', getSelectionText);
+      linkbutton.on('click', getSelectionText);
 
 
       let check = 0;
@@ -320,49 +320,52 @@ $(document).ready(function () {
           $("#edit-wizard-link span").html("Done selecting");
           // $( 'body' ).css( 'background-color', '#b8b9ba' );
           // $( '#mw-head' ).css( 'background-color', '#b8b9ba' );
-          selected = 1;
+          // selected = 1;
       }
     }
 
-    function doneSelecting(){
-      // if(selected){
-      //   popUp.toggle(false);
-      // }
+    // function doneSelecting(){
+    //   // if(selected){
+    //   //   popUp.toggle(false);
+    //   // }
 
-      if(selected){
-        selectValue = getSelectionText();
-        selectionSection = getSelectionSection();
+    //   if(selected){
+    //     selectValue = getSelectionText();
+    //     selectionSection = getSelectionSection();
 
-      // If the selectValue is empty, prompt a warning
-      if (selectValue === "") {
-          selectstatus.setType("warning");
-          selectstatus.setLabel("Please select the text before continuing");
-      }
-      else{
-          stack.setItem( quotepanel );
-          $("#edit-wizard-link span").html("Edit Wizard");
-          // $( 'body' ).css( 'background-color', '#f6f6f6' );
-          // $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
-          selected = 0;
-      }
-      }
-    }
+    //   // If the selectValue is empty, prompt a warning
+    //   if (selectValue === "") {
+    //       selectstatus.setType("warning");
+    //       selectstatus.setLabel("Please select the text before continuing");
+    //   }
+    //   else{
+    //       stack.setItem( quotepanel );
+    //       $("#edit-wizard-link span").html("Edit Wizard");
+    //       // $( 'body' ).css( 'background-color', '#f6f6f6' );
+    //       // $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
+    //       selected = 0;
+    //   }
+    //   }
+    // }
 
     
-    // Function to get the Selected Text 
+    // Function to get the Selected Paragraph Text
+    var text = "", sel;
     function getSelectionText() {
-      var text = "";
-      if (window.getSelection) {
-          text = window.getSelection().toString();
-      } else if (document.selection && document.selection.type !== "Control") {
-          text = document.selection.createRange().text;
-      }
+      document.getElementById("mw-content-text").addEventListener("click",function(e) {
+        // e.target was the clicked element
+        sel = e.target;
+        if (e.target && e.target.nodeName == "P") {
+          text = e.target.innerText;
+        }
+      });
       return text;
     }
 
     // Funtion to get the target Section
     function getSelectionSection(){
-      var e = window.getSelection().anchorNode.parentElement;
+      var e = sel;
+      console.log(e);
       var found_it = false;
       while (e.tagName.toLowerCase() !== 'body') {
           if (e.tagName.toLowerCase() === 'h2') {
@@ -380,8 +383,7 @@ $(document).ready(function () {
 
     let selectValue, selectionSection;
     function handleselectNext(){
-      selectValue = getSelectionText();
-
+      selectValue = text;
       // If the selectValue is empty, prompt a warning
       if (selectValue === "") {
           selectstatus.setType("warning");
@@ -434,8 +436,8 @@ $(document).ready(function () {
     function handleselectBack(){
       stack.setItem( linkpanel );
       $("#edit-wizard-link span").html("Edit Wizard");
-      $( 'body' ).css( 'background-color', '#f6f6f6' );
-      $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
+      // $( 'body' ).css( 'background-color', '#f6f6f6' );
+      // $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
     }
     function handlequoteBack(){
       stack.setItem( selectpanel );
