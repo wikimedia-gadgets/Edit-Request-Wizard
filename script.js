@@ -9,6 +9,7 @@ $(document).ready(function () {
   mw.loader.addStyleTag( '.button { display: inline-block; text-align: center; margin-top: 10px; margin-bottom: 10px }' );
   mw.loader.addStyleTag( '.container { width: 415px; height:150px }');
   mw.loader.addStyleTag( '.status:empty { display: none }');
+  mw.loader.addStyleTag( '.copyright { font-size: 10.5px; color: grey; line-height: 140% }');
 
   // It is important to make sure that OOUI is loaded before we can make use of it.
   mw.loader.using("oojs-ui", "mediawiki.api").done(function () {
@@ -202,6 +203,10 @@ $(document).ready(function () {
           classes: ["button"],
           flags: ["primary", "progressive"],
         }),
+        copyrightText = new OO.ui.LabelWidget({
+          label: $( '<p>By publishing changes, you agree to the <a href="https://foundation.wikimedia.org/wiki/Terms_of_Use/en">Terms of Use</a>, and you irrevocably agree to release your contribution under the <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License">CC BY-SA 3.0 License</a> and the <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_the_GNU_Free_Documentation_License">GFDL</a>. You agree that a hyperlink or URL is sufficient attribution under the Creative Commons license.</p>'  ),
+          classes: ["copyright"],
+        }),
 
         requotepanel = new OO.ui.PanelLayout({
           content: [
@@ -211,6 +216,7 @@ $(document).ready(function () {
             requotestatus,
             requotebackbutton,
             requotebutton,
+            copyrightText,
           ],
           padded: true,
         });
@@ -569,9 +575,10 @@ $(document).ready(function () {
         $content: stack.$element,
         padded: true,
         popup: false,
-        width: 440,
-        height: 220,
+        width: 540,
+        height: 400,
         head: true,
+        // hideWhenOutOfView: false,
         // autoClose: false,
         hideCloseButton: false,
     });
