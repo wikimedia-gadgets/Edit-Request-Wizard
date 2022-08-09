@@ -70,7 +70,7 @@ $(document).ready(function () {
       }),
 
       selectfieldsetcontent = new OO.ui.FieldsetLayout({
-        label: "Select the sentence in the article that your text should go after and click Next",
+        label: "Click on the paragraph where your fact should go and click Next",
         classes: ["label"],
       }),
       selectstatus = new OO.ui.MessageWidget({
@@ -223,6 +223,7 @@ $(document).ready(function () {
 
       //all the functional buttons
       linkverifybutton.on('click', handlelinkVerify);
+      linkbutton.on('click', ref);
       linkbutton.on('click', handlelinkNext);
       quotebutton.on('click', handlequoteNext);
       selectbutton.on('click', handleselectNext);
@@ -324,6 +325,61 @@ $(document).ready(function () {
       }
     }
 
+    var reference='';
+    function ref(){
+      const linkValue = linkinput.getValue();
+      const query= encodeURIComponent(linkValue);
+      
+      //API call to make a request from Citoid
+      fetch(`https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki/${query}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Api-User-Agent': 'w:en:User:Ankit18gupta/MyScript.js'
+        }
+      })
+        .then(response => response.json())
+        .then(citationArray => {
+          
+          fetch('https://en.wikipedia.org/w/api.php?action=templatedata&titles=Template:Cite%20web&format=json', {
+              headers: {
+                'Content-Type': 'application/json',
+                'Api-User-Agent': 'w:en:User:Ankit18gupta/MyScript.js'
+              }
+            })
+              .then(response => response.json())
+              .then(translateArray => {
+                const finalArray = Object
+                .fromEntries(
+                  Object
+                    .entries(citationArray[0])
+                    .filter(([key, value]) => (key in translateArray.pages['1252907'].maps.citoid))
+                    .map(([key, value]) => [translateArray.pages['1252907'].maps.citoid[key], value])
+                );
+
+                
+                for (const key in finalArray) {
+                  reference = `${reference}|${key}=${finalArray[key]} `;
+                }
+                reference = `<ref>{{Cite web ${reference}}}</ref>`;
+
+                // console.log(reference);
+              })
+              .catch((error) => {
+                console.log("Error: ",error);
+              });
+
+        })
+        .catch((error) => {
+          console.log("Error: ",error);
+        });
+      
+    }
+
+
+
+
+
+
     // function doneSelecting(){
     //   // if(selected){
     //   //   popUp.toggle(false);
@@ -365,7 +421,7 @@ $(document).ready(function () {
     // Funtion to get the target Section
     function getSelectionSection(){
       var e = sel;
-      console.log(e);
+      // console.log(e);
       var found_it = false;
       while (e.tagName.toLowerCase() !== 'body') {
           if (e.tagName.toLowerCase() === 'h2') {
@@ -468,7 +524,8 @@ $(document).ready(function () {
 
 
     function handlePublish(){
-        
+        const refer = reference;
+        // console.log(refer);
         const linkValue = linkinput.getValue();
         const quoteValue = quoteinput.getValue();
         const requoteValue = requoteinput.getValue();
@@ -488,7 +545,7 @@ $(document).ready(function () {
             // API calls code goes here
             editPage({
               title: (new mw.Title(mw.config.get("wgPageName"))).getTalkPage().toText(),
-              text: '\n== Edit Request made by {{subst:REVISIONUSER}} ~~~~~ == \n' + '<br><b>Citation:</b> ' + `[${linkValue} ${website}]` + '<br><b>Section to Edit:</b> ' + selectionSection + '<br><b>Spot where to add the fact:</b> ' + selectValue + '<br><b>Quote:</b> ' + 'Quote starts here - ' + firstthree + '...             ' + lastthree + '<br><b>Rephrased Quote:</b> ' + requoteValue + '<br> ~~~~',
+              text: '\n== Edit Request made by {{subst:REVISIONUSER}} ~~~~~ == \n' + '<br><b>Citation:</b> ' + `[${linkValue} ${website}]` + '<br><b>Section to Edit:</b> ' + selectionSection + '<br><b>Spot where to add the fact:</b> ' + selectValue + '<br><b>Quote:</b> ' + 'Quote starts here - ' + firstthree + '...' + lastthree + '<br><b>Rephrased Quote:</b> ' + "<syntaxhighlight lang='html'>" +requoteValue + refer + "</syntaxhighlight>" + '<br><b>Rendered:</b> '+ requoteValue + refer +'<br> ~~~~',
               summary: 'Edit Request to add a fact'
             }); 
         }
