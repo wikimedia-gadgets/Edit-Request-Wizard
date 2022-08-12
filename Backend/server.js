@@ -11,7 +11,7 @@ const port = parseInt(process.env.PORT, 10);
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
-app.use(morgan('short'));
+app.use(morgan('tiny'));
 
 //To check if the service is running
 app.get('/ping', function(req, res) {
@@ -104,5 +104,5 @@ app.post('/api/v1/verifyQuote', async (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Listening on port ${port}`)
 })
