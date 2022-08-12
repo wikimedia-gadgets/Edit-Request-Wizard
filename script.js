@@ -242,7 +242,8 @@ $(document).ready(function () {
 
       let check = 0;
       async function handlelinkVerify(){
-        const linkValue = linkinput.getValue();
+        var linkURL = linkinput.getValue();
+        const linkValue = new URL(linkURL.includes('//') ? linkURL : `//${linkURL}`, 'https://foo.bar').origin;
 
         linkstatus.setType("none");
         linkstatus.setIcon("null");
@@ -285,7 +286,8 @@ $(document).ready(function () {
 
     let linkurl, website, selected=0;
     async function handlelinkNext(){
-      const linkValue = linkinput.getValue();
+      var linkURL = linkinput.getValue();
+      const linkValue = new URL(linkURL.includes('//') ? linkURL : `//${linkURL}`, 'https://foo.bar').origin;
       const query= encodeURIComponent(linkValue);
 
       //API call to make a request from Citoid
