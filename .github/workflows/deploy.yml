@@ -9,9 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cd Backend
-      - run: npm install
-      - run: npm test
+      - run: |
+              cd Backend
+              npm install
+              npm test
   update:
     needs: tests
     runs-on: ubuntu-latest
