@@ -5,7 +5,15 @@ on:
   - workflow_dispatch
 
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          node-version: '14'
+      - run: npm test
   update:
+    needs: tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

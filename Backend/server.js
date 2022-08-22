@@ -5,7 +5,7 @@ const morgan = require('morgan');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
-const port = parseInt(process.env.PORT, 10);
+const port = parseInt(process.env.PORT || '3000', 10);
 // const port = 3000;
 
 const app = express();
@@ -103,6 +103,6 @@ app.post('/api/v1/verifyQuote', async (req, res) => {
   } 
 })
 
-app.listen(port, () => {
+module.exports = app.listen(port, () => {
   console.log(`Listening on port ${port}`)
 })
