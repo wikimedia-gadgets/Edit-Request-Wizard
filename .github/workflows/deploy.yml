@@ -9,10 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: |
-          cd Backend
-          npm install
-          npm test
+      - name: Setup Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Install dependencies and run tests
+        run: cd Backend && echo "In Backend directory" && npm install && echo "Installed deps" && npm test
   update:
     needs: tests
     runs-on: ubuntu-latest
