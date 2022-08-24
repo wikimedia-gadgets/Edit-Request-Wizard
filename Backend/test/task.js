@@ -55,3 +55,5 @@ describe("POST/api/", () => {
         });
     });
 });
+
+after(() => request.server.close());

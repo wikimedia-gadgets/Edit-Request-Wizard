@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: 16
       - name: Install dependencies and run tests
-        run: "cd Backend && echo 'In Backend directory' && npm install && echo 'Installed deps' && npm test && webservice --backend=kubernetes node12 stop"
+        run: "cd Backend && echo 'In Backend directory' && npm install && echo 'Installed deps' && npm test"
   update:
     needs: tests
     runs-on: ubuntu-latest
