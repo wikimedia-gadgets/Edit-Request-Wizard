@@ -8,10 +8,12 @@ chai.use(chaiHttp);
 
 describe("API Endpoints", () => {
 
-    afterAll(() => {
-        done => server.close(done)
-        // shut down server or do whatever cleanup is needed
-      })
+    // afterAll(() => {
+    //     // done => server.close(done);
+    //     // shut down server or do whatever cleanup is needed
+    //   })
+
+    // after(done => server.close(done));
 
     context("GET/api/", () => {
         it("It should GET to check if service is running",(done)=>{

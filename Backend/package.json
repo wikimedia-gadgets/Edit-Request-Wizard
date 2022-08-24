@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test": "mocha"
+    "test": "mocha --exit"
   },
   "author": "ankit",
   "license": "MIT",
