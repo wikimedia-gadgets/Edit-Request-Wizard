@@ -27,7 +27,7 @@ jobs:
               cd Edit-Request-Wizard/Backend;
               git pull;
               npm install;
-              webservice --backend=kubernetes node12 restart;
+              webservice --backend=kubernetes node16 restart;
             '
           host: login.toolforge.org
           username: ankitgupta

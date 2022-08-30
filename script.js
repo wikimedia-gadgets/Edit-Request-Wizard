@@ -620,10 +620,10 @@ $(document).ready(function () {
         quotestatus.setType("warning");
         quotestatus.setLabel("The input cannot be left empty");
       }
-      else if(!isParagraphTextOnPage) {
-        quotestatus.setType("error");
-        quotestatus.setLabel("The quote does not match. Please make sure the quote is copied/pasted exactly from the source");
-      }
+      // else if(!isParagraphTextOnPage) {
+      //   quotestatus.setType("error");
+      //   quotestatus.setLabel("The quote does not match. Please make sure the quote is copied/pasted exactly from the source");
+      // }
       else if (isParagraphTextOnPage) {
         quotestatus.setType("success");
         quotestatus.setLabel("Verified!");
