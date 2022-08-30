@@ -602,19 +602,19 @@ $(document).ready(function () {
       const quoteValue = quoteinput.getValue();
       const linkValue = linkinput.getValue();
 
-      quotestatus.setType("none");
-      quotestatus.setIcon("null");
-      quotestatus.setLabel("Loading...");
+      // quotestatus.setType("none");
+      // quotestatus.setIcon("null");
+      // quotestatus.setLabel("Loading...");
       
 
-      //Calling the API to the backend to verify if the quote comes from the source
-      const host = window.ERW_DEV_MODE ? 'https://edit-wizard.toolforge.org' : 'http://localhost:3000';
-      const response = await fetch(`https://edit-wizard.toolforge.org/api/v1/verifyQuote`, {
-        method: "POST",
-        body: JSON.stringify({ linkValue, quoteValue }),
-        headers: { 'Content-Type': 'application/json' },
-      })
-      const { isParagraphTextOnPage } = await response.json()
+      // //Calling the API to the backend to verify if the quote comes from the source
+      // const host = window.ERW_DEV_MODE ? 'https://edit-wizard.toolforge.org' : 'http://localhost:3000';
+      // const response = await fetch(`https://edit-wizard.toolforge.org/api/v1/verifyQuote`, {
+      //   method: "POST",
+      //   body: JSON.stringify({ linkValue, quoteValue }),
+      //   headers: { 'Content-Type': 'application/json' },
+      // })
+      // const { isParagraphTextOnPage } = await response.json()
 
       if (quoteValue === "") {
         quotestatus.setType("warning");
@@ -624,7 +624,15 @@ $(document).ready(function () {
       //   quotestatus.setType("error");
       //   quotestatus.setLabel("The quote does not match. Please make sure the quote is copied/pasted exactly from the source");
       // }
-      else if (isParagraphTextOnPage) {
+      // else if (isParagraphTextOnPage) {
+      //   quotestatus.setType("success");
+      //   quotestatus.setLabel("Verified!");
+      //   stack.setItem( requotepanel );
+      //   if(options == 2){
+      //     requoteinput.setValue(selectValue2);
+      //     requoteheading.setLabel("Enter the fixed fact");
+      //   }
+      else{
         quotestatus.setType("success");
         quotestatus.setLabel("Verified!");
         stack.setItem( requotepanel );
