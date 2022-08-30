@@ -2,18 +2,58 @@
 $(document).ready(function () {
 
   //CSS loader
-  mw.loader.addStyleTag( '.heading { font-size: 18px; text-align: center; margin: 5px; width:100% }');
+  mw.loader.addStyleTag( '.heading { font-size: 22px; text-align: center; margin: 10px; width:100%; font-weight: bold }');
   mw.loader.addStyleTag( '.help { font-size: 13px; font-style: italic }');
   mw.loader.addStyleTag( '.status { font: 13px sans-serif; margin: 5px; width: 70%; font-style: italic; width: 100% }');
   mw.loader.addStyleTag( '.messageStatus { font: 12px sans-serif; margin-left: 1rem; margin: 5px; width: 70%; font-style: italic; width: 100% }');
+  mw.loader.addStyleTag( '.welcomebutton { display: inline-grid; text-align: center; margin: 13px; width: 43% }' );
   mw.loader.addStyleTag( '.button { display: inline-block; text-align: center; margin-top: 10px; margin-bottom: 10px }' );
   mw.loader.addStyleTag( '.container { width: 415px; height:150px }');
   mw.loader.addStyleTag( '.status:empty { display: none }');
   mw.loader.addStyleTag( '.copyright { font-size: 10.5px; color: grey; line-height: 140% }');
 
+  
   // It is important to make sure that OOUI is loaded before we can make use of it.
   mw.loader.using("oojs-ui", "mediawiki.api").done(function () {
 
+      // OOUI widgets for main menu welcome panel
+      welcomeheading = new OO.ui.LabelWidget({
+        label: "Welcome to the Edit Wizard \n",
+        classes: ["heading"],
+      }),
+      welcomebutton1 = new OO.ui.ButtonWidget({
+        label: "Add Fact",
+        classes: ["welcomebutton"],
+        flags: ["primary", "progressive"],
+      }),
+      welcomebutton2 = new OO.ui.ButtonWidget({
+        label: "Fix Factual Error",
+        classes: ["welcomebutton"],
+        flags: ["primary", "progressive"],
+      }),
+      welcomebutton3 = new OO.ui.ButtonWidget({
+        label: "Remove Content",
+        classes: ["welcomebutton"],
+        flags: ["primary", "progressive"],
+      }),
+      welcomebutton4 = new OO.ui.ButtonWidget({
+        label: "Do Something Else",
+        classes: ["welcomebutton"],
+        flags: ["primary", "progressive"],
+      }),
+
+      welcomepanel = new OO.ui.PanelLayout({
+        content: [
+          welcomeheading,
+          welcomebutton1,
+          welcomebutton2,
+          welcomebutton3,
+          welcomebutton4,
+        ],
+        padded: true,
+      }),
+
+      // OOUI widgets for Link to the source panel
       linkheading = new OO.ui.LabelWidget({
         label: "Give a source for your fact",
         classes: ["label"],
@@ -52,6 +92,11 @@ $(document).ready(function () {
         classes: ["button"],
         flags: ["primary", "progressive"],
       }),
+      linkbackbutton = new OO.ui.ButtonWidget({
+        label: "Back",
+        classes: ["button"],
+        flags: ["primary", "progressive"],
+      }),
       linkbutton = new OO.ui.ButtonWidget({
         label: "Next",
         classes: ["button"],
@@ -64,12 +109,14 @@ $(document).ready(function () {
           linkhelp,
           linkinput,
           linkstatus,
+          linkbackbutton,
           linkverifybutton,
           linkbutton,
         ],
         padded: true,
       }),
 
+      // OOUI widgets for selecting the paragraph panel
       selectfieldsetcontent = new OO.ui.FieldsetLayout({
         label: "Click on the paragraph where your fact should go and click Next",
         classes: ["label"],
@@ -101,7 +148,39 @@ $(document).ready(function () {
         padded: true,
       }),
 
+      //OOUI widgets for selecting text panel
+      select2fieldsetcontent = new OO.ui.FieldsetLayout({
+        label: "Select the text where you want to fix the fact and click Next",
+        classes: ["label"],
+      }),
+      select2status = new OO.ui.MessageWidget({
+        inline: true,
+        classes: ["status"],
+        showClose: true,
+        icon:"none",
+      }),
+      select2button = new OO.ui.ButtonWidget({
+        label: "Next",
+        classes: ["button"],
+        flags: ["primary", "progressive"],
+      }),
+      select2backbutton = new OO.ui.ButtonWidget({
+        label: "Back",
+        classes: ["button"],
+        flags: ["primary", "progressive"],
+      }),
 
+      select2panel = new OO.ui.PanelLayout({
+        content: [
+          select2fieldsetcontent,
+          select2status,
+          select2backbutton,
+          select2button,
+        ],
+        padded: true,
+      }),
+
+      // OOUI widgets for giving the quote panel
       quoteheading = new OO.ui.LabelWidget({
         label: "Quote from your source that supports your fact",
         classes: ["label"],
@@ -159,7 +238,7 @@ $(document).ready(function () {
         padded: true,
       }),
 
-     
+      // OOUI widgets for re-writing the quote panel
       requoteheading = new OO.ui.LabelWidget({
         label: "Rewrite the quote in your own words",
         classes: ["label"],
@@ -220,30 +299,110 @@ $(document).ready(function () {
           ],
           padded: true,
         });
-        
 
+        // OOUI widgets for deleting options panel
+        deleteheading = new OO.ui.LabelWidget({
+          label: "Reason to Delete",
+          classes: ["label"],
+        }),
+        deleteDropdown = new OO.ui.DropdownWidget( {
+          label: 'Select one',
+          $overlay: true,
+          menu: {
+            items: [
+              new OO.ui.MenuOptionWidget( {
+                data: 'Irrelevant',
+                label: 'Irrelevant'
+              } ),
+              new OO.ui.MenuOptionWidget( {
+                data: 'Incorrect',
+                label: 'Incorrect'
+              } ),
+              new OO.ui.MenuOptionWidget( {
+                data: 'Misleading',
+                label: 'Misleading'
+              } ),
+              new OO.ui.MenuOptionWidget( {
+                data: 'Redundant',
+                label: 'Redundant'
+              } )
+            ]
+          }
+        } )
+        deletebutton = new OO.ui.ButtonWidget({
+          label: "Send Edit Request",
+          classes: ["button"],
+          flags: ["primary", "progressive"],
+        }),
+        deletebackbutton = new OO.ui.ButtonWidget({
+          label: "Back",
+          classes: ["button"],
+          flags: ["primary", "progressive"],
+        }),
+        copyrightText = new OO.ui.LabelWidget({
+          label: $( '<p>By publishing changes, you agree to the <a href="https://foundation.wikimedia.org/wiki/Terms_of_Use/en">Terms of Use</a>, and you irrevocably agree to release your contribution under the <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License">CC BY-SA 3.0 License</a> and the <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_the_GNU_Free_Documentation_License">GFDL</a>. You agree that a hyperlink or URL is sufficient attribution under the Creative Commons license.</p>'  ),
+          classes: ["copyright"],
+        }),
+
+        deletepanel = new OO.ui.PanelLayout({
+          content: [
+            deleteheading,
+            deleteDropdown,
+            deletebackbutton,
+            deletebutton,
+            copyrightText,
+          ],
+          padded: true,
+        });
+        
+      // Stack layout for all the panels
       var stack = new OO.ui.StackLayout({
         classes: ["container"],
-        items: [linkpanel, selectpanel, quotepanel, requotepanel],
+        items: [welcomepanel, linkpanel, selectpanel, select2panel, quotepanel, requotepanel, deletepanel],
       });
 
-      //all the functional buttons
+      // All the functional buttons
+      // All welcome panel(main menu) buttons
+      welcomebutton1.on('click', addFactPanel);
+      welcomebutton2.on('click', fixFactualError);
+      welcomebutton3.on('click', deleteFact);
+      welcomebutton4.on('click', doSomethingElse);
+      // All next buttons
+      select2button.on('click', handleselectNext2);
       linkverifybutton.on('click', handlelinkVerify);
       linkbutton.on('click', ref);
+      linkbutton.on('click', getSelectionText);
       linkbutton.on('click', handlelinkNext);
       quotebutton.on('click', handlequoteNext);
       selectbutton.on('click', handleselectNext);
+      // All publish(send edit request) buttons
+      requotebutton.on('click', handlePublish);
+      deletebutton.on('click', handlePublishForDelete);
+      // All back buttons
       quotebackbutton.on('click', handlequoteBack);
       requotebackbutton.on('click', handlerequoteBack);
       selectbackbutton.on('click', handleselectBack);
-      requotebutton.on('click', handlePublish);
-      linkbutton.on('click', getSelectionText);
+      select2backbutton.on('click', handleselectBack2);
+      linkbackbutton.on('click', handlelinkBack);
+      deletebackbutton.on('click', deleteBack);
 
+      // To particularly know which option the user has opted from the main menu
+      var options = 0;
 
-      let check = 0;
+      // To add the first add fact panel(ie link to the source panel)
+      function addFactPanel(){
+        options = 1;
+        stack.setItem( linkpanel );
+      }
+
+      let check = 0; //check = 0 (verify button not clicked); check = 1 (source ok can proceed next); check = 2 (source blacklisted cannot proceed next); check = 3 (not a valid URL cannot proceed next)
+      
+      // To call the backend API to verify the source URL
       async function handlelinkVerify(){
-        var linkURL = linkinput.getValue();
-        const linkValue = new URL(linkURL.includes('//') ? linkURL : `//${linkURL}`, 'https://foo.bar').origin;
+        var linkValue = linkinput.getValue();
+        // var linkURL = linkinput.getValue();
+        // console.log(linkURL);
+        // const linkValue = new URL(linkURL.includes('//') ? linkURL : `//${linkURL}`, 'https://foo.bar').origin;
 
         linkstatus.setType("none");
         linkstatus.setIcon("null");
@@ -253,41 +412,48 @@ $(document).ready(function () {
           linkstatus.setType("warning");
           linkstatus.setLabel("The input cannot be left empty");
         }
-        //Making an API call to the backend to verify if the quote comes from the source
-        const host = window.ERW_DEV_MODE ? 'https://edit-wizard.toolforge.org' : 'http://localhost:3000';
-        const response = await fetch(`https://edit-wizard.toolforge.org/api/v1/verifySource`, {
-          method: "POST",
-          body: JSON.stringify({ linkValue}),
-          headers: { 'Content-Type': 'application/json'},
-        })
-        const { comment, flag, kind } = await response.json()
-        
-        if(flag==2){
-          check = 3;
-          linkstatus.setType("error");
-          linkstatus.setLabel("This is not a valid URL");
-        }
-        else if (flag==1) {
-          check = 1;
-          linkstatus.setType("warning");
-          linkstatus.setLabel(comment);
-          if (kind == "blacklisted" || kind == "unreliable") {
-            check = 2;
+        else{
+          //Making an API call to the backend to verify the source
+          const host = window.ERW_DEV_MODE ? 'https://edit-wizard.toolforge.org' : 'http://localhost:3000';
+          const response = await fetch(`https://edit-wizard.toolforge.org/api/v1/verifySource`, {
+            method: "POST",
+            body: JSON.stringify({ linkValue}),
+            headers: { 'Content-Type': 'application/json'},
+          })
+          const { comment, flag, kind } = await response.json()
+          
+          // flag = 0 (Source probably OK); flag = 1 (blacklisted or unreliable source); flag = 2 (not a valid URL)
+          
+          if(flag==2){
+            check = 3;
             linkstatus.setType("error");
-            linkstatus.setLabel(comment);
+            linkstatus.setLabel("This is not a valid URL");
           }
-        }
-        else if (flag==0){
+          else if (flag==1) {
             check = 1;
-            linkstatus.setType("success");
-            linkstatus.setLabel("Source probably OK");
+            linkstatus.setType("warning");
+            linkstatus.setLabel(comment);
+            if (kind == "blacklisted" || kind == "unreliable") {
+              check = 2;
+              linkstatus.setType("error");
+              linkstatus.setLabel(comment);
+            }
+          }
+          else if (flag==0){
+              check = 1;
+              linkstatus.setType("success");
+              linkstatus.setLabel("Source probably OK");
+          }
         }
       }
 
-    let linkurl, website, selected=0;
+    let linkurl, website; // For saving the source URL and website title
+    
+    // To handle the URL panel next button and calling the citoid API to add reference for citing the source
     async function handlelinkNext(){
-      var linkURL = linkinput.getValue();
-      const linkValue = new URL(linkURL.includes('//') ? linkURL : `//${linkURL}`, 'https://foo.bar').origin;
+      var linkValue = linkinput.getValue();
+      // var linkURL = linkinput.getValue();
+      // const linkValue = new URL(linkURL.includes('//') ? linkURL : `//${linkURL}`, 'https://foo.bar').origin;
       const query= encodeURIComponent(linkValue);
 
       //API call to make a request from Citoid
@@ -325,15 +491,18 @@ $(document).ready(function () {
           linkstatus.setLabel("This is not a valid URL, we cannot proceed");
       }
       else if(check == 1){
+        if(options == 2){
+          stack.setItem( quotepanel );
+        }
+        else{
           stack.setItem( selectpanel );
-          $("#edit-wizard-link span").html("Done selecting");
-          // $( 'body' ).css( 'background-color', '#b8b9ba' );
-          // $( '#mw-head' ).css( 'background-color', '#b8b9ba' );
-          // selected = 1;
+        }
       }
+      check=0;
     }
 
-    var reference='';
+    // To include formatted reference in edit request(from citoid)
+    var reference=''; //To save the reference result
     function ref(){
       const linkValue = linkinput.getValue();
       const query= encodeURIComponent(linkValue);
@@ -364,13 +533,10 @@ $(document).ready(function () {
                     .map(([key, value]) => [translateArray.pages['1252907'].maps.citoid[key], value])
                 );
 
-                
                 for (const key in finalArray) {
                   reference = `${reference}|${key}=${finalArray[key]} `;
                 }
                 reference = `<ref>{{Cite web ${reference}}}</ref>`;
-
-                // console.log(reference);
               })
               .catch((error) => {
                 console.log("Error: ",error);
@@ -383,37 +549,8 @@ $(document).ready(function () {
       
     }
 
-
-
-
-
-
-    // function doneSelecting(){
-    //   // if(selected){
-    //   //   popUp.toggle(false);
-    //   // }
-
-    //   if(selected){
-    //     selectValue = getSelectionText();
-    //     selectionSection = getSelectionSection();
-
-    //   // If the selectValue is empty, prompt a warning
-    //   if (selectValue === "") {
-    //       selectstatus.setType("warning");
-    //       selectstatus.setLabel("Please select the text before continuing");
-    //   }
-    //   else{
-    //       stack.setItem( quotepanel );
-    //       $("#edit-wizard-link span").html("Edit Wizard");
-    //       // $( 'body' ).css( 'background-color', '#f6f6f6' );
-    //       // $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
-    //       selected = 0;
-    //   }
-    //   }
-    // }
-
     
-    // Function to get the Selected Paragraph Text
+    // To get the Selected Paragraph Text
     var text = "", sel;
     function getSelectionText() {
       document.getElementById("mw-content-text").addEventListener("click",function(e) {
@@ -429,7 +566,6 @@ $(document).ready(function () {
     // Funtion to get the target Section
     function getSelectionSection(){
       var e = sel;
-      // console.log(e);
       var found_it = false;
       while (e.tagName.toLowerCase() !== 'body') {
           if (e.tagName.toLowerCase() === 'h2') {
@@ -445,24 +581,23 @@ $(document).ready(function () {
       return e.firstChild.textContent;
     }
 
-    let selectValue, selectionSection;
+    let selectValue, selectionSection; // To save the selected paragraph and the selected paragraphs's section from the article
+
+    // To handle the Next button of Select paragraph panel
     function handleselectNext(){
       selectValue = text;
       // If the selectValue is empty, prompt a warning
       if (selectValue === "") {
           selectstatus.setType("warning");
-          selectstatus.setLabel("Please select the text before continuing");
+          selectstatus.setLabel("Please click on the paragraph before continuing");
       }
       else{
           selectionSection = getSelectionSection();
           stack.setItem( quotepanel );
-          selected = 0;
-          $("#edit-wizard-link span").html("Edit Wizard");
-          // $( 'body' ).css( 'background-color', '#f6f6f6' );
-          // $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
       }
     }
 
+    // To handle the Next button of quote panel and calling the API from backend to verify if the quote text comes from the source
     async function handlequoteNext(){
       const quoteValue = quoteinput.getValue();
       const linkValue = linkinput.getValue();
@@ -472,7 +607,7 @@ $(document).ready(function () {
       quotestatus.setLabel("Loading...");
       
 
-      //Making an API call to the backend to verify if the quote comes from the source
+      //Calling the API to the backend to verify if the quote comes from the source
       const host = window.ERW_DEV_MODE ? 'https://edit-wizard.toolforge.org' : 'http://localhost:3000';
       const response = await fetch(`https://edit-wizard.toolforge.org/api/v1/verifyQuote`, {
         method: "POST",
@@ -493,29 +628,124 @@ $(document).ready(function () {
         quotestatus.setType("success");
         quotestatus.setLabel("Verified!");
         stack.setItem( requotepanel );
+        if(options == 2){
+          requoteinput.setValue(selectValue2);
+          requoteheading.setLabel("Enter the fixed fact");
+        }
       }
       
     }
     
-    function handleselectBack(){
-      stack.setItem( linkpanel );
-      $("#edit-wizard-link span").html("Edit Wizard");
-      // $( 'body' ).css( 'background-color', '#f6f6f6' );
-      // $( '#mw-head' ).css( 'background-color', '#f6f6f6' );
-    }
-    function handlequoteBack(){
-      stack.setItem( selectpanel );
-      selected = 1;
-      $("#edit-wizard-link span").html("Done selecting");
-      // $( 'body' ).css( 'background-color', '#b8b9ba' );
-      // $( '#mw-head' ).css( 'background-color', '#b8b9ba' );
-    }
-    function handlerequoteBack(){
-      stack.setItem( quotepanel );
-      selected = 0;
+    // To add the fix factual error panel(ie select text panel)
+    function fixFactualError(){
+      options = 2;
+      select2fieldsetcontent.setLabel("Select the text where you want to fix the fact and click Next");
+      stack.setItem( select2panel );
     }
 
-    // Function to send request to the edit page
+    // Function to get the Selected text for fix factual error
+    function getSelectionText2() {
+      var text = "";
+      if (window.getSelection) {
+          text = window.getSelection().toString();
+      } else if (document.selection && document.selection.type !== "Control") {
+          text = document.selection.createRange().text;
+      }
+      return text;
+    }
+
+    // Funtion to get the target Section for fix factual error
+    function getSelectionSection2(){
+      var e = window.getSelection().anchorNode.parentElement;
+      var found_it = false;
+      while (e.tagName.toLowerCase() !== 'body') {
+          if (e.tagName.toLowerCase() === 'h2') {
+              found_it = true;
+              break;
+          }
+          if (e.previousElementSibling) {
+              e = e.previousElementSibling;
+          } else {
+              e = e.parentNode;
+          }
+      }
+      return e.firstChild.textContent;
+    }
+
+    var selectValue2, selectionSection2; // to save the selected text and selected text's section from the artice
+    
+    // To handle the Next button of Select text panel
+    function handleselectNext2(){
+      selectValue2 = getSelectionText2();
+      // If the selectValue is empty, prompt a warning
+      if (selectValue2 === "") {
+          select2status.setType("warning");
+          select2status.setLabel("Please select the text before continuing");
+      }
+      else if(options == 3){
+        stack.setItem( deletepanel );
+      }
+      else{
+          selectionSection2 = getSelectionSection2();
+          stack.setItem( linkpanel );
+          // selected = 0;
+          $("#edit-wizard-link span").html("Edit Wizard");
+      }
+    }
+
+    // To add the first delete fact panel(ie select text panel)
+    function deleteFact(){
+      options = 3;
+      select2fieldsetcontent.setLabel("Select the text you want to delete and click Next");
+      stack.setItem( select2panel );
+    }
+
+    // Redirect to the visual editor
+    function doSomethingElse(){
+      const editURL = mw.util.getUrl(null,{action: 'edit'});
+      window.location.href = editURL;
+    }
+
+    // To handle the back button of delete panel
+    function deleteBack(){
+      stack.setItem( select2panel );
+    }
+
+    // To handle the back button of URL to source panel
+    function handlelinkBack(){
+      if(options == 1){
+        stack.setItem( welcomepanel );
+      }
+      if(options == 2){
+        stack.setItem( select2panel );
+      }
+    }
+    
+    // To handle the back button of select paragraph panel
+    function handleselectBack(){
+      stack.setItem( linkpanel );
+    } 
+
+    // To handle the back button of select text panel
+    function handleselectBack2(){
+      stack.setItem( welcomepanel );
+    }
+
+    
+    // To handle the back button of quote panel
+    function handlequoteBack(){
+      if(options == 1)
+      stack.setItem( selectpanel );
+      if(options == 2)
+      stack.setItem( linkpanel );
+    }
+
+    // To handle the back button of requote panel
+    function handlerequoteBack(){
+      stack.setItem( quotepanel );
+    }
+
+    // Helper function for handlePublish function to call the mw API to access and send the edit request to the talk page of current article
     function editPage( info ) {
       var api = new mw.Api();
       api.postWithToken("csrf", {
@@ -530,10 +760,9 @@ $(document).ready(function () {
       } );
     }
 
-
+    // To handle the send edit request button to send the edit request to the talk page
     function handlePublish(){
         const refer = reference;
-        // console.log(refer);
         const linkValue = linkinput.getValue();
         const quoteValue = quoteinput.getValue();
         const requoteValue = requoteinput.getValue();
@@ -556,10 +785,28 @@ $(document).ready(function () {
               text: '\n== Edit Request made by {{subst:REVISIONUSER}} ~~~~~ == \n' + '<br><b>Citation:</b> ' + `[${linkValue} ${website}]` + '<br><b>Section to Edit:</b> ' + selectionSection + '<br><b>Spot where to add the fact:</b> ' + selectValue + '<br><b>Quote:</b> ' + 'Quote starts here - ' + firstthree + '...' + lastthree + '<br><b>Rephrased Quote:</b> ' + "<syntaxhighlight lang='html'>" +requoteValue + refer + "</syntaxhighlight>" + '<br><b>Rendered:</b> '+ requoteValue + refer +'<br> ~~~~',
               summary: 'Edit Request to add a fact'
             }); 
+            if(options == 2){
+              editPage({
+                title: (new mw.Title(mw.config.get("wgPageName"))).getTalkPage().toText(),
+                text: '\n== Edit Request made by {{subst:REVISIONUSER}} ~~~~~ == \n' + '<br><b>Citation:</b> ' + `[${linkValue} ${website}]` + '<br><b>Section to Fix:</b> ' + selectionSection2 + '<br><b>Spot where the fact is to be fixed:</b> ' + selectValue2 + '<br><b>Quote:</b> ' + 'Quote starts here - ' + firstthree + '...' + lastthree + '<br><b>Fixed Fact:</b> ' + "<syntaxhighlight lang='html'>" +requoteValue + refer + "</syntaxhighlight>" + '<br><b>Rendered:</b> '+ requoteValue + refer +'<br> ~~~~',
+                summary: 'Edit Request to fix the error'
+              }); 
+            }
         }
     }
-    
 
+    // To handle the send edit request button to send the edit request to the talk page particularly for delete option
+    function handlePublishForDelete(){
+      const deleteReason = deleteDropdown.getMenu().findSelectedItem().getData();
+
+      editPage({
+        title: (new mw.Title(mw.config.get("wgPageName"))).getTalkPage().toText(),
+        text: '\n== Edit Request made by {{subst:REVISIONUSER}} ~~~~~ == \n' + '<br><b>Section where to Delete:</b> ' + selectionSection2 + '<br><b>Text to be deleted:</b> ' + selectValue2 + '<br><b>Reason to delete:</b> ' + deleteReason + '<br> ~~~~',
+        summary: 'Edit Request to delete the text'
+      }); 
+    }
+    
+    // To add the edit wizard tab on the top navigation bar
     var node = mw.util.addPortletLink(
       'p-views',
       "#",
@@ -586,9 +833,6 @@ $(document).ready(function () {
     });
     
     
-    //If we are done selecting the text it automatically moves to the next panel
-    // $(node).on('click', doneSelecting);
-
     $(node).on('click', function(e){
       popUp.toggle();
       e.preventDefault();
