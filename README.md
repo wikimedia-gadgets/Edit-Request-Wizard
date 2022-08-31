@@ -1,4 +1,4 @@
-<p align="center"><img src="/demos/demo.png" alt="GSoC with WMF"></p>
+<p align="center"><img src="/demos/logo.png" alt="GSoC with WMF"></p>
 
 ## 📌Introduction
  - Name: [Ankit Gupta](https://github.com/Ankit-Gupta18)
@@ -62,6 +62,5 @@ All of my blog posts related to the project can be found [here](https://ankit-bl
 # 📌Special note
 This project is created as part of Google Summer of Code 2022 with my mentoring organization being **Wikimedia Foundation.** Once deployed on Wikipedia, I'll update the deployed link in the repository.
 
-<p align="center"><img src="/demos/demo.png" alt="GSoC with WMF"></p>
-
+<p align="center"><img src="/demos/logo.png" alt="GSoC with WMF"></p>
 
