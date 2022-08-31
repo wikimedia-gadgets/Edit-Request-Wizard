@@ -17,7 +17,7 @@ fetch('https://edit-wizard.toolforge.org/ping').then(function(response){
         let transporter = nodemailer.createTransport({ host: "mail.tools.wmcloud.org" });
         transporter.sendMail({
             from: "edit-wizard.maintainers@toolforge.org", // sender address
-            to: "ankitguptabhabha@gmail.com", // list of receivers
+            to: "edit-wizard.maintainers@toolforge.org", // list of receivers
             subject: "Edit Request Wizard service is not running", // Subject line
             text: `Edit Request Wizard service is not running. You are requested to look into it as soon as possible.\nStatus Code : ${statusCode} \nStatus Text : ${statusText}`, // plain text body
             // html: "<b>Hello world?</b>", // html body
