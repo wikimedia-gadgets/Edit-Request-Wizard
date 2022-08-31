@@ -14,7 +14,7 @@ fetch('https://edit-wizard.toolforge.org/ping').then(function(response){
     const statusCode = response.status;
     const statusText = response.statusText;
     if(!response.ok){
-        let transporter = nodemailer.createTransport({ host: "mail.tools.wmflabs.org" });
+        let transporter = nodemailer.createTransport({ host: "mail.tools.wmcloud.org" });
         transporter.sendMail({
             from: "edit-wizard.maintainers@toolforge.org", // sender address
             to: "ankitguptabhabha@gmail.com", // list of receivers
