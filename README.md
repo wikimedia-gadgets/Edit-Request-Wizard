@@ -26,7 +26,14 @@ That’s the organization I got the opportunity to contribute to this summer.
 
 My project aims at creating a step-by-step form to help beginners submit a Wikipedia edit request. An edit request is a request for someone to change some text in an article. Edit requests are an important part of Wikipedia. The form created in this project will help the edit requests comply with Wikipedia policy. It will be developed as a Wikipedia user script that shows a form for submitting a Wikipedia edit request, with high-quality guidance and error messages, suitable for use by beginners, and a backend server that the user script will make calls to for validation of source and quote.
 
-// Adding final project pics and code snippets here (pending)
+<p align="center"><img src="/demos/1.png" alt="GSoC with WMF"></p>
+<p align="center"><img src="/demos/2.png" alt="GSoC with WMF"></p>
+<p align="center"><img src="/demos/3.png" alt="GSoC with WMF"></p>
+<p align="center"><img src="/demos/4.png" alt="GSoC with WMF"></p>
+<p align="center"><img src="/demos/5.png" alt="GSoC with WMF"></p>
+
+Edit Request on Talk page
+<p align="center"><img src="/demos/edit request.png" alt="GSoC with WMF"></p>
 
 ## 📌Final Words
 
